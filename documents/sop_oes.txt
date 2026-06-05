@@ -1,0 +1,21 @@
+OES Signal Troubleshooting SOP
+
+Purpose:
+This procedure explains how to respond when the OES signal is unstable after chamber preventive maintenance.
+
+Procedure:
+1. Confirm that the tool is in a safe state.
+2. Check if there are any active alarms on the tool.
+3. Inspect the OES fiber connection.
+4. Check the fiber connector for loose fitting or contamination.
+5. Reseat the OES fiber connector if required.
+6. Run a short verification test.
+7. Monitor the OES signal stability during the test run.
+8. If the signal remains unstable, escalate the issue to the shift lead.
+
+Safety notes:
+Do not open any chamber or electrical cabinet unless the tool is in the correct safe state.
+Follow local lockout/tagout procedure when required.
+
+Expected result:
+The OES signal should return to a stable range after the fiber connection is checked and reseated.

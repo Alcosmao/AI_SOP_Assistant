@@ -7,6 +7,7 @@ from app.chunking import chunk_text
 
 DOCUMENT_PATH = Path("documents/sop_oes.txt")
 CHUNK_SIZE = 300
+CHUNK_OVERLAP = 50
 
 
 def main():
@@ -17,13 +18,14 @@ def main():
         return
 
     cleaned_text = clean_text(document_text)
-    chunks = chunk_text(cleaned_text, CHUNK_SIZE)
+    chunks = chunk_text(cleaned_text, CHUNK_SIZE, CHUNK_OVERLAP)
 
 
     print("Document loaded successfully.")
     print("-----------------------------")
     print(f"Cleaned text lenght: {len(cleaned_text)} character")
     print(f"Chunk size: {CHUNK_SIZE} characters")
+    print(f"Chunk overlap: {CHUNK_OVERLAP}")
     print(f"Number of chunks: {len(chunks)}")
     print("-----------------------------")
 

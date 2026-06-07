@@ -17,19 +17,21 @@ def build_context(top_chunks):
     return "\n\n".join(context_parts)
 
 
-def has_relevant_context(top_chunks, minimum_score):
-    if not top_chunks:
-        return False
-    
-    best_score = top_chunks[0]["similarity_score"]
+def build_source_list(top_chunks):
+    source_lines = []
 
-    if best_score < minimum_score:
-        return False
-    
-    return True
+    for result in top_chunks:
+        chunk_number = result["chunk_index"] + 1
+        score = result["similarity_score"]
+
+        source_lines.append(
+            f"- [Source chunk {chunk_number}] similarity score: {score}"
+        )
+
+    return "\n".join(source_lines)
 
 
-def create_grounded_answer(question, context, has_context):
+def create_grounded_answer(question, context, has_context, sources):
     if not has_context:
         return (
             "I don't know based on the provided document. "
@@ -41,7 +43,8 @@ def create_grounded_answer(question, context, has_context):
         "Based on the retrieved document context, the answer should be created "
         "only from the source chunks below.\n\n"
         f"Question:\n{question}\n\n"
-        f"Source context:\n{context}"
+        f"Source context:\n{context}\n\n"
+        f"Sources used:\n{sources}"
     )
-
+    
     return answer

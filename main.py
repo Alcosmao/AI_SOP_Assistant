@@ -11,7 +11,7 @@ from app.retrieval import (
 )
 from app.answering import (
     build_context,
-    has_relevant_context,
+    build_source_list,
     create_grounded_answer,
 )
 
@@ -20,7 +20,7 @@ DOCUMENT_PATH = Path("documents/sop_oes.txt")
 CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
 TOP_K = 3
-MINIMUM_RELEVANCE_SCORE = 3
+MINIMUM_RELEVANCE_SCORE = 4
 
 
 def main():
@@ -39,7 +39,7 @@ def main():
         embedding = create_simple_embedding(chunk)
         chunk_embeddings.append(embedding)
 
-    question = "What is the replacement cost of the OES sensor?"
+    question = "What should I do if OES signal is unstable?"
     question_embedding = create_simple_embedding(question)
 
     ranked_chunks = rank_chunks_by_similarity(
@@ -55,18 +55,20 @@ def main():
         TOP_K
     )
 
-    context = build_context(top_chunks)
+    relevant_chunks = [
+        chunk for chunk in top_chunks
+        if chunk["similarity_score"] >= MINIMUM_RELEVANCE_SCORE
+    ]
 
-    has_context = has_relevant_context(
-        top_chunks,
-        MINIMUM_RELEVANCE_SCORE
-    )
-
+    has_context = len(relevant_chunks) > 0
+    context = build_context(relevant_chunks)
+    sources = build_source_list(relevant_chunks)
 
     grounded_answer = create_grounded_answer(
         question,
         context,
-        has_context
+        has_context,
+        sources
     )
 
     best_index, best_chunk, best_score = find_best_chunk(
@@ -120,6 +122,10 @@ def main():
     print("-" * 60)
     print(f"Minimum relevance score: {MINIMUM_RELEVANCE_SCORE}")
     print(f"Has relevant context: {has_context}")
+
+    print("\nSOURCES")
+    print("-" * 60)
+    print(sources)
 
     print("\nGROUNDED ANSWER")
     print("-" * 60)

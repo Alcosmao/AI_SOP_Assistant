@@ -39,6 +39,8 @@ Validated checklist items: 7
 [ ] Run a short verification test.
 [ ] Monitor the OES signal stability during the test run.
 
+Checklist saved to: reports/checklist.txt
+
 GROUNDED ANSWER
 ------------------------------------------------------------
 Grounded answer draft:

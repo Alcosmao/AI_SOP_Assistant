@@ -14,11 +14,13 @@ from app.answering import (
     build_source_list,
     create_grounded_answer,
 )
-from app.checklist import generate_checlist_from_text
+from app.checklist import generate_checklist_from_text
 from app.validation import validate_checklist_items
+from app.export import save_checklist_to_txt
 
 
 DOCUMENT_PATH = Path("documents/sop_oes.txt")
+REPORTS_PATH = Path("reports")
 CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
 TOP_K = 3
@@ -66,11 +68,16 @@ def main():
     context = build_context(relevant_chunks)
     sources = build_source_list(relevant_chunks)
     if has_context:
-        checklist_items = generate_checlist_from_text(context)
+        checklist_items = generate_checklist_from_text(context)
         validated_checklist_items = validate_checklist_items(checklist_items)
     else:
         checklist_items = []
         validated_checklist_items = []
+
+    checklist_file_path = save_checklist_to_txt(
+        validated_checklist_items,
+        REPORTS_PATH
+    )
 
     grounded_answer = create_grounded_answer(
         question,
@@ -147,6 +154,12 @@ def main():
             print(item)
     else:
         print("No valid checklist items found in the relevant context.")
+
+    print("")
+    if checklist_file_path:
+        print(f"Checklist saved to: {checklist_file_path}")
+    else:
+        print("Checklist file not created (no valid items to save).")
 
     print("\nGROUNDED ANSWER")
     print("-" * 60)

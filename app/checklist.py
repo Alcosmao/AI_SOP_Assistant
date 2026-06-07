@@ -13,7 +13,7 @@ def remove_step_number(line):
     return line.split(".",1)[1].strip()
 
 
-def generate_checlist_from_text(text):
+def generate_checklist_from_text(text):
     checklist_items = []
 
     lines = text.splitlines()

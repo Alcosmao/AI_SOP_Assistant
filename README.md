@@ -16,6 +16,7 @@ This is not a full AI chat app yet. It is a **Python pipeline** that shows step 
 6. Builds **context** and an **answer** only from good chunks.
 7. Generates a **checklist** from numbered procedure steps.
 8. Validates the checklist (format, length, duplicates).
+9. Exports the checklist to `reports/checklist.txt` (when valid items exist).
 
 If the document does not contain good enough context, the program responds with:
 
@@ -46,6 +47,9 @@ python main.py
 ```
 
 3. The output will appear in the terminal.
+4. If a checklist is generated, it is also saved to `reports/checklist.txt`.
+
+**Note:** the `reports/` folder is created automatically and is ignored by git (local output only).
 
 ---
 
@@ -58,6 +62,7 @@ The `examples/` folder contains sample pipeline outputs so you can see results w
 | [examples/run_i_dont_know_output.txt](examples/run_i_dont_know_output.txt) | Default run — weak relevance, system refuses to answer |
 | [examples/run_success_output.txt](examples/run_success_output.txt) | Successful run — sources, checklist, grounded answer |
 | [examples/validated_checklist.txt](examples/validated_checklist.txt) | Checklist output only (7 validated steps) |
+| [examples/checklist_report.txt](examples/checklist_report.txt) | Sample exported report (same as `reports/checklist.txt`) |
 | [examples/README.md](examples/README.md) | Explains each example and how to reproduce it |
 
 ---
@@ -75,14 +80,17 @@ AI_SOP_Assistant/
 │   ├── retrieval.py        # Ranks chunks by similarity
 │   ├── answering.py        # Builds context and answer
 │   ├── checklist.py        # Creates a checklist from steps 1., 2., 3. ...
-│   └── validation.py       # Validates the checklist
+│   ├── validation.py       # Validates the checklist
+│   └── export.py           # Saves checklist to reports/checklist.txt
 ├── documents/
 │   └── sop_oes.txt         # Sample SOP document
+├── reports/                # Generated checklist files (created on run, gitignored)
 └── examples/
     ├── README.md           # Guide to sample outputs
     ├── run_i_dont_know_output.txt
     ├── run_success_output.txt
-    └── validated_checklist.txt
+    ├── validated_checklist.txt
+    └── checklist_report.txt
 ```
 
 ---
@@ -109,8 +117,10 @@ relevance filter             → only chunks with score >= threshold
 build_context()              → source text for the answer
 build_source_list()          → list of sources
     ↓
-generate_checlist_from_text() → checklist from steps
+generate_checklist_from_text() → checklist from steps
 validate_checklist_items()    → clean checklist
+    ↓
+save_checklist_to_txt()      → save to reports/checklist.txt
     ↓
 create_grounded_answer()     → answer or "I don't know..."
 ```
@@ -128,6 +138,7 @@ You can change these values at the top of `main.py`:
 | `CHUNK_OVERLAP` | `50` | How many characters overlap between chunks |
 | `TOP_K` | `3` | How many best chunks to retrieve |
 | `MINIMUM_RELEVANCE_SCORE` | `4` | Minimum score for a chunk to be used |
+| `REPORTS_PATH` | `reports` | Folder for exported checklist `.txt` files |
 
 **Note:** with the current test question, the best chunks have a score of **3**, but the threshold is **4** — so the program correctly says *"I don't know"*. To see a full answer and checklist, set e.g. `MINIMUM_RELEVANCE_SCORE = 3`.
 
@@ -154,7 +165,7 @@ Then `calculate_similarity()` multiplies the vectors and sums the result — the
 
 ## Checklist — what happens
 
-1. **`generate_checlist_from_text()`** looks for lines in the format `1.`, `2.`, `3.` ...
+1. **`generate_checklist_from_text()`** looks for lines in the format `1.`, `2.`, `3.` ...
 2. Removes the number and adds `[ ]` at the start.
 3. **`validate_checklist_items()`** checks:
    - does it start with `[ ] `?
@@ -171,6 +182,26 @@ Example output:
 ```
 
 The checklist is built **only** from relevant chunks (after the score filter).
+
+### Export to file
+
+If there are validated checklist items, they are saved to:
+
+```
+reports/checklist.txt
+```
+
+Example file content:
+
+```
+[ ] Confirm that the tool is in a safe state.
+[ ] Check if there are any active alarms on the tool.
+[ ] Inspect the OES fiber connection.
+```
+
+If there are no valid items (e.g. `"I don't know"` run), no file is created.
+
+See sample export: [examples/checklist_report.txt](examples/checklist_report.txt)
 
 ---
 
@@ -198,7 +229,7 @@ This is intentionally a simple learning project:
 - [ ] Integrate an LLM to generate answers
 - [ ] CLI interface with a custom question
 - [ ] Load multiple SOP documents
-- [ ] Export checklist to a `.txt` or `.md` file
+- [x] Export checklist to a `.txt` file (`reports/checklist.txt`)
 - [ ] Support steps like `10.`, `11.`, etc.
 - [x] Add `examples/` folder with sample runs
 

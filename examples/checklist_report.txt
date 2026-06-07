@@ -1,0 +1,7 @@
+[ ] Confirm that the tool is in a safe state.
+[ ] Check if there are any active alarms on the tool.
+[ ] Inspect the OES fiber connection.
+[ ] Check the fiber connector for loose fitting or contamination.
+[ ] Reseat the OES fiber connector if required.
+[ ] Run a short verification test.
+[ ] Monitor the OES signal stability during the test run.

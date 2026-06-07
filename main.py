@@ -14,6 +14,8 @@ from app.answering import (
     build_source_list,
     create_grounded_answer,
 )
+from app.checklist import generate_checlist_from_text
+from app.validation import validate_checklist_items
 
 
 DOCUMENT_PATH = Path("documents/sop_oes.txt")
@@ -39,7 +41,7 @@ def main():
         embedding = create_simple_embedding(chunk)
         chunk_embeddings.append(embedding)
 
-    question = "What should I do if OES signal is unstable?"
+    question = "What is the replacement cost of the OES sensor?"
     question_embedding = create_simple_embedding(question)
 
     ranked_chunks = rank_chunks_by_similarity(
@@ -63,6 +65,12 @@ def main():
     has_context = len(relevant_chunks) > 0
     context = build_context(relevant_chunks)
     sources = build_source_list(relevant_chunks)
+    if has_context:
+        checklist_items = generate_checlist_from_text(context)
+        validated_checklist_items = validate_checklist_items(checklist_items)
+    else:
+        checklist_items = []
+        validated_checklist_items = []
 
     grounded_answer = create_grounded_answer(
         question,
@@ -126,6 +134,19 @@ def main():
     print("\nSOURCES")
     print("-" * 60)
     print(sources)
+
+    print("\nCHECKLIST")
+    print("-" * 60)
+
+    print(f"Raw checklist items: {len(checklist_items)}")
+    print(f"Validated checklist items: {len(validated_checklist_items)}")
+    print("")
+
+    if validated_checklist_items:
+        for item in validated_checklist_items:
+            print(item)
+    else:
+        print("No valid checklist items found in the relevant context.")
 
     print("\nGROUNDED ANSWER")
     print("-" * 60)

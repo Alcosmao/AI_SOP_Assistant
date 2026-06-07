@@ -49,6 +49,19 @@ python main.py
 
 ---
 
+## Examples
+
+The `examples/` folder contains sample pipeline outputs so you can see results without running the code:
+
+| File | Description |
+|---|---|
+| [examples/run_i_dont_know_output.txt](examples/run_i_dont_know_output.txt) | Default run — weak relevance, system refuses to answer |
+| [examples/run_success_output.txt](examples/run_success_output.txt) | Successful run — sources, checklist, grounded answer |
+| [examples/validated_checklist.txt](examples/validated_checklist.txt) | Checklist output only (7 validated steps) |
+| [examples/README.md](examples/README.md) | Explains each example and how to reproduce it |
+
+---
+
 ## Project structure
 
 ```
@@ -63,8 +76,13 @@ AI_SOP_Assistant/
 │   ├── answering.py        # Builds context and answer
 │   ├── checklist.py        # Creates a checklist from steps 1., 2., 3. ...
 │   └── validation.py       # Validates the checklist
-└── documents/
-    └── sop_oes.txt         # Sample SOP document
+├── documents/
+│   └── sop_oes.txt         # Sample SOP document
+└── examples/
+    ├── README.md           # Guide to sample outputs
+    ├── run_i_dont_know_output.txt
+    ├── run_success_output.txt
+    └── validated_checklist.txt
 ```
 
 ---
@@ -182,6 +200,7 @@ This is intentionally a simple learning project:
 - [ ] Load multiple SOP documents
 - [ ] Export checklist to a `.txt` or `.md` file
 - [ ] Support steps like `10.`, `11.`, etc.
+- [x] Add `examples/` folder with sample runs
 
 ---
 

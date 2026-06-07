@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app.loaders import load_document
+from app.loaders import load_document, load_question
 from app.text_utils import clean_text
 from app.chunking import chunk_text
 from app.embeddings import create_simple_embedding
@@ -20,11 +20,12 @@ from app.export import save_checklist_to_txt
 
 
 DOCUMENT_PATH = Path("documents/sop_oes.txt")
+QUESTION_PATH = Path("input/question.txt")
 REPORTS_PATH = Path("reports")
 CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
 TOP_K = 3
-MINIMUM_RELEVANCE_SCORE = 4
+MINIMUM_RELEVANCE_SCORE = 3
 
 
 def main():
@@ -32,6 +33,13 @@ def main():
 
     if document_text is None:
         print("Document not found.")
+        return
+
+    question = load_question(QUESTION_PATH)
+
+    if question is None:
+        print("Question file not found or empty.")
+        print(f"Create a file at: {QUESTION_PATH}")
         return
 
     cleaned_text = clean_text(document_text)
@@ -43,7 +51,6 @@ def main():
         embedding = create_simple_embedding(chunk)
         chunk_embeddings.append(embedding)
 
-    question = "What is the replacement cost of the OES sensor?"
     question_embedding = create_simple_embedding(question)
 
     ranked_chunks = rank_chunks_by_similarity(
@@ -105,6 +112,7 @@ def main():
 
     print("\nQUESTION")
     print("-" * 60)
+    print(f"Question file: {QUESTION_PATH}")
     print(question)
     print(f"Question embedding: {question_embedding}")
 

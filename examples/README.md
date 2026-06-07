@@ -70,8 +70,9 @@ python main.py
 ```
 
 **Success output (Example 2):**
-Change in `main.py`:
+Use the default `input/question.txt` or set:
 - `MINIMUM_RELEVANCE_SCORE = 3`
-- `question = "What should I do when the OES signal is unstable after maintenance?"`
+- question in file: `What should I do when the OES signal is unstable after maintenance?`
 
-Then run `python main.py` again.
+**Off-topic question (Example 1 style):**
+Copy content from `input/question_off_topic.txt` into `input/question.txt`, then run `python main.py`.

@@ -17,6 +17,7 @@ This is not a full AI chat app yet. It is a **Python pipeline** that shows step 
 7. Generates a **checklist** from numbered procedure steps.
 8. Validates the checklist (format, length, duplicates).
 9. Exports the checklist to `reports/checklist.txt` (when valid items exist).
+10. Reads your **custom question** from `input/question.txt`.
 
 If the document does not contain good enough context, the program responds with:
 
@@ -40,14 +41,18 @@ git clone <your-repo-url>
 cd AI_SOP_Assistant
 ```
 
-2. Run the program:
+2. Edit your question in `input/question.txt` (one question per file).
+
+3. Run the program:
 
 ```bash
 python main.py
 ```
 
-3. The output will appear in the terminal.
-4. If a checklist is generated, it is also saved to `reports/checklist.txt`.
+4. The output will appear in the terminal.
+5. If a checklist is generated, it is also saved to `reports/checklist.txt`.
+
+**Try another question:** copy text from `input/question_off_topic.txt` into `input/question.txt` and run again.
 
 **Note:** the `reports/` folder is created automatically and is ignored by git (local output only).
 
@@ -84,6 +89,9 @@ AI_SOP_Assistant/
 │   └── export.py           # Saves checklist to reports/checklist.txt
 ├── documents/
 │   └── sop_oes.txt         # Sample SOP document
+├── input/
+│   ├── question.txt        # Your question (read on each run)
+│   └── question_off_topic.txt  # Example: question not in the SOP
 ├── reports/                # Generated checklist files (created on run, gitignored)
 └── examples/
     ├── README.md           # Guide to sample outputs
@@ -101,6 +109,8 @@ AI_SOP_Assistant/
 SOP document
     ↓
 load_document()              → load the file
+    ↓
+load_question()              → read question from input/question.txt
     ↓
 clean_text()                 → remove empty lines
     ↓
@@ -134,15 +144,18 @@ You can change these values at the top of `main.py`:
 | Constant | Default | What it does |
 |---|---|---|
 | `DOCUMENT_PATH` | `documents/sop_oes.txt` | Path to the document |
+| `QUESTION_PATH` | `input/question.txt` | Path to your question file |
 | `CHUNK_SIZE` | `300` | Size of one chunk (characters) |
 | `CHUNK_OVERLAP` | `50` | How many characters overlap between chunks |
 | `TOP_K` | `3` | How many best chunks to retrieve |
-| `MINIMUM_RELEVANCE_SCORE` | `4` | Minimum score for a chunk to be used |
+| `MINIMUM_RELEVANCE_SCORE` | `3` | Minimum score for a chunk to be used |
 | `REPORTS_PATH` | `reports` | Folder for exported checklist `.txt` files |
 
-**Note:** with the current test question, the best chunks have a score of **3**, but the threshold is **4** — so the program correctly says *"I don't know"*. To see a full answer and checklist, set e.g. `MINIMUM_RELEVANCE_SCORE = 3`.
+**Change the question:** edit `input/question.txt` and run `python main.py` again. No code changes needed.
 
-You can also change the test question in `main.py` (the line with `question = ...`).
+**Example questions included:**
+- `input/question.txt` — good match for the SOP (checklist + answer)
+- `input/question_off_topic.txt` — asks about sensor cost (not in document → *"I don't know"*)
 
 ---
 
@@ -220,6 +233,7 @@ This is intentionally a simple learning project:
 - no vector database
 - embeddings based on only 6 keywords
 - step numbering works only for the `1.` format (not `10.` or `1)`)
+- question comes from a file, not interactive typing in the terminal
 
 ---
 
@@ -227,7 +241,7 @@ This is intentionally a simple learning project:
 
 - [ ] Connect a real embedding model
 - [ ] Integrate an LLM to generate answers
-- [ ] CLI interface with a custom question
+- [x] Custom question from `input/question.txt`
 - [ ] Load multiple SOP documents
 - [x] Export checklist to a `.txt` file (`reports/checklist.txt`)
 - [ ] Support steps like `10.`, `11.`, etc.

@@ -1,0 +1,115 @@
+﻿
+============================================================
+RAG PIPELINE RESULT
+============================================================
+
+DOCUMENT
+------------------------------------------------------------
+Cleaned text length: 3566 characters
+Chunk size: 300 characters
+Chunk overlap: 50 characters
+Number of chunks: 15
+
+QUESTION
+------------------------------------------------------------
+Question file: input\question.txt
+After chamber preventive maintenance, the OES signal became unstable during a production run. I already confirmed the tool is in a safe state and checked for active alarms.
+
+I need help with these separate topics from the SOP only:
+
+1) OES fiber troubleshooting: inspect the fiber connection, check the connector for loose fitting or contamination, reseat the connector if required, run a verification test, and monitor signal stability.
+
+2) Safety before chamber access: what rules apply before opening any chamber or electrical cabinet, and what lockout/tagout procedure should I follow?
+
+3) Escalation: if the signal remains unstable after fiber checks, who do I escalate to?
+
+Do not answer about OES sensor replacement cost, spare parts pricing, or purchase orders ù that information is not part of this procedure.
+Question embedding length: 1536
+
+CHUNK RANKING
+------------------------------------------------------------
+Chunk 1: score 0.7801643444765537
+Chunk 2: score 0.7285241670407087
+Chunk 10: score 0.7138423000119972
+Chunk 5: score 0.7134682604333065
+Chunk 6: score 0.6712345333458712
+Chunk 13: score 0.6482793922212939
+Chunk 12: score 0.6369302326478256
+Chunk 11: score 0.6316284748576313
+Chunk 4: score 0.62082082604234
+Chunk 3: score 0.6093649249039483
+Chunk 7: score 0.6064459648809294
+Chunk 9: score 0.6020095511486481
+Chunk 8: score 0.5868584944377008
+Chunk 14: score 0.516319876221685
+Chunk 15: score 0.36817950306450964
+
+TOP 5 CHUNKS
+------------------------------------------------------------
+Chunk 1: score 0.7801643444765537
+Preview: OES Signal Troubleshooting SOP Document ID: SOP-OES-TRB-001 Revision: 2.1 Applies to: Chamber tools with OES monitoring after preventive maintenance Purpose: This procedure explains how to respond when the OES signal is ...
+
+Chunk 2: score 0.7285241670407087
+Preview: ge after chamber preventive maintenance, fiber handling, or connector rework. Scope: Use this SOP for production tools in automatic or manual mode when the OES trace shows drift, dropouts, or unstable baseline readings. ...
+
+Chunk 10: score 0.7138423000119972
+Preview:  support ticket. 3. If safety risk is suspected, stop the tool and notify the area supervisor immediately. 4. Do not continue production runs with an unverified OES signal. Safety notes: 1. Do not open any chamber or ele...
+
+Chunk 5: score 0.7134682604333065
+Preview: OES trend plots in the equipment software. 4. Record the current OES baseline value and alarm limits in the shift log. 5. Verify that no unrelated recipe or gas line changes were made in the last 24 hours. Fiber and conn...
+
+Chunk 6: score 0.6712345333458712
+Preview: he OES fiber connection at the chamber interface. 2. Check the fiber connector for loose fitting, scratches, or contamination. 3. Look for bent fiber, sharp bends, or damaged strain relief near the connector. 4. Clean th...
+
+
+BEST CHUNK
+------------------------------------------------------------
+Best chunk number: 1
+Best similarity score: 0.7801643444765537
+Preview: OES Signal Troubleshooting SOP Document ID: SOP-OES-TRB-001 Revision: 2.1 Applies to: Chamber tools with OES monitoring after preventive maintenance Purpose: This procedure explains how to respond when the OES signal is unstable, noisy, or out of range after chamber preventive maintenance, fiber han...
+
+RELEVANCE CHECK
+------------------------------------------------------------
+Minimum relevance score: 0.71
+Has relevant context: True
+
+SOURCES
+------------------------------------------------------------
+- [Source chunk 1] similarity score: 0.7801643444765537
+- [Source chunk 2] similarity score: 0.7285241670407087
+- [Source chunk 10] similarity score: 0.7138423000119972
+- [Source chunk 5] similarity score: 0.7134682604333065
+
+CHECKLIST
+------------------------------------------------------------
+Raw checklist items: 7
+Validated checklist items: 6
+
+[ ] If safety risk is suspected, stop the tool and notify the area supervisor immediately.
+[ ] Do not continue production runs with an unverified OES signal.
+[ ] Do not open any chamber or electrical cabinet unless the tool is in the correct safe state.
+[ ] Record the current OES baseline value and alarm limits in the shift log.
+[ ] Verify that no unrelated recipe or gas line changes were made in the last 24 hours.
+[ ] Inspect the OES fiber connection at the chamber interface.
+
+Checklist saved to: reports\checklist.txt
+
+GROUNDED ANSWER
+------------------------------------------------------------
+Based on the provided SOP context:
+
+1) OES fiber troubleshooting  
+- Inspect the OES fiber connection at the chamber interface.  
+- Check the connector for loose fitting or contamination.  
+- Reseat the connector if required.  
+- Run a verification test.  
+- Monitor the OES signal stability afterward.  
+
+2) Safety before chamber access  
+- Do not open any chamber or electrical cabinet unless the tool is in the correct safe state.  
+- Follow local lockout/tagout procedure before opening a chamber or electrical cabinet.  
+- The SOP also says to stop the tool and notify the area supervisor immediately if a safety risk is suspected.  
+
+3) Escalation if unstable after fiber checks  
+- The provided context does not identify a specific person or group to escalate to after fiber checks. I don't know based on the provided document.
+============================================================

@@ -1,78 +1,79 @@
 # Examples
 
-Sample outputs from the AI SOP Assistant pipeline. Use these to see what the project produces without running it yourself.
+Sample outputs from the project. I added these so you can see what the pipeline does **without running it yourself** or paying for OpenAI API calls.
+
+These examples are from the **current OpenAI version** of the project:
+- OpenAI embeddings (`text-embedding-3-small`)
+- Cosine similarity scores (0–1)
+- OpenAI Chat answer (`gpt-5.4-mini`)
+- `TOP_K = 5`, relevance threshold `0.71`
 
 ---
 
-## Files
+## Files in this folder
 
 | File | What it shows |
 |---|---|
-| `run_i_dont_know_output.txt` | Default `main.py` run — question not answered well enough (relevance threshold blocks answer) |
-| `run_success_output.txt` | Successful run — good question, chunks pass filter, answer + checklist generated |
-| `validated_checklist.txt` | Final checklist only (7 validated steps from the success example) |
-| `checklist_report.txt` | Same checklist saved to `reports/checklist.txt` when export runs |
+| `run_openai_success_output.txt` | Good question → chunks found → LLM answer + checklist |
+| `run_openai_i_dont_know_output.txt` | Off-topic question → no relevant chunks → "I don't know" |
+| `validated_checklist.txt` | Checklist only (6 items from success run) |
+| `checklist_report.txt` | Same checklist saved to `reports/checklist.txt` |
 
 ---
 
-## Example 1: "I don't know" (default run)
+## Example 1 — Success (OpenAI RAG works)
 
-**Question:** `What is the replacement cost of the OES sensor?`
+**Question:** multi-topic OES question from `input/question.txt`  
+(fiber troubleshooting + safety + escalation)
 
-**Settings:** `MINIMUM_RELEVANCE_SCORE = 4` (as in `main.py`)
+**Settings when captured:**
+- 15 chunks from the longer SOP
+- `TOP_K = 5`
+- `MINIMUM_RELEVANCE_SCORE = 0.71`
 
-**What happens:**
-- Retrieval finds OES-related chunks (score 3), but they are below the threshold
-- No sources, no checklist, no grounded answer
-- System correctly refuses: *"I don't know based on the provided document..."*
+**What happened:**
+- Best scores: ~0.78, 0.73, 0.71, 0.71
+- Worst chunk (pricing / out of scope): ~0.37
+- 4 chunks passed the relevance filter
+- Checklist: 6 validated items
+- LLM answered fiber + safety steps from the SOP
+- Escalation contact was **not** in the retrieved chunks → LLM honestly said *"I don't know"* for that part (good grounding)
 
-This shows **grounding + safety** — the pipeline does not invent an answer when context is weak or off-topic.
-
-See: `run_i_dont_know_output.txt`
-
----
-
-## Example 2: Successful RAG run
-
-**Question:** `What should I do when the OES signal is unstable after maintenance?`
-
-**Settings:** `MINIMUM_RELEVANCE_SCORE = 3` (lower threshold for demo)
-
-**What happens:**
-- Chunks score 5, 5, 3 — all pass the filter
-- Sources listed with similarity scores
-- Checklist built from numbered procedure steps (7 items after validation)
-- Grounded answer draft built from retrieved context only
-
-See: `run_success_output.txt`, `validated_checklist.txt`, and `checklist_report.txt`
+See: `run_openai_success_output.txt`
 
 ---
 
-## Example 3: Exported checklist report
+## Example 2 — "I don't know" (safety works)
 
-**When:** successful run with validated checklist items
+**Question:** from `input/question_off_topic.txt`  
+*"What is the replacement cost and part number for OES sensor... purchase order..."*
 
-**What happens:**
-- Program saves checklist to `reports/checklist.txt` (local folder, gitignored)
-- File content is one checklist item per line
+**What happened:**
+- Best chunk score only ~0.49 (below 0.71 threshold)
+- `Has relevant context: False`
+- No sources, no checklist, no report file
+- Answer: *"I don't know based on the provided document..."*
+- LLM was **not called** (Python returns this before OpenAI Chat)
 
-**Sample file:** `checklist_report.txt` in this folder shows exactly what lands in `reports/checklist.txt`.
+This is correct — the SOP says pricing is out of scope.
 
-**When no file is created:** default run with `"I don't know"` — see `run_i_dont_know_output.txt` (*Checklist file not created...*).
+See: `run_openai_i_dont_know_output.txt`
 
 ---
 
 ## How to reproduce
 
-**Default output (Example 1):**
-```bash
-python main.py
-```
+**Success example:**
+1. Put the multi-topic question in `input/question.txt` (see current file in repo)
+2. Make sure `.env` has `OPENAI_API_KEY`
+3. Run `python main.py`
 
-**Success output (Example 2):**
-Use the default `input/question.txt` or set:
-- `MINIMUM_RELEVANCE_SCORE = 3`
-- question in file: `What should I do when the OES signal is unstable after maintenance?`
+**"I don't know" example:**
+1. Copy text from `input/question_off_topic.txt` into `input/question.txt`
+2. Run `python main.py`
 
-**Off-topic question (Example 1 style):**
-Copy content from `input/question_off_topic.txt` into `input/question.txt`, then run `python main.py`.
+---
+
+## Old examples (removed)
+
+The previous files `run_success_output.txt` and `run_i_dont_know_output.txt` were from the **old keyword embedding version** (scores like 3 and 5). They are outdated and were replaced by the `run_openai_*` files above.

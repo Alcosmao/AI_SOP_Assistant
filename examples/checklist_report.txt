@@ -1,7 +1,6 @@
-[ ] Confirm that the tool is in a safe state.
-[ ] Check if there are any active alarms on the tool.
-[ ] Inspect the OES fiber connection.
-[ ] Check the fiber connector for loose fitting or contamination.
-[ ] Reseat the OES fiber connector if required.
-[ ] Run a short verification test.
-[ ] Monitor the OES signal stability during the test run.
+[ ] If safety risk is suspected, stop the tool and notify the area supervisor immediately.
+[ ] Do not continue production runs with an unverified OES signal.
+[ ] Do not open any chamber or electrical cabinet unless the tool is in the correct safe state.
+[ ] Record the current OES baseline value and alarm limits in the shift log.
+[ ] Verify that no unrelated recipe or gas line changes were made in the last 24 hours.
+[ ] Inspect the OES fiber connection at the chamber interface.

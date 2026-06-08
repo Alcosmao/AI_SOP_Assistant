@@ -1,0 +1,82 @@
+
+============================================================
+RAG PIPELINE RESULT
+============================================================
+
+DOCUMENT
+------------------------------------------------------------
+Cleaned text length: 3566 characters
+Chunk size: 300 characters
+Chunk overlap: 50 characters
+Number of chunks: 15
+
+QUESTION
+------------------------------------------------------------
+Question file: input\question.txt
+What is the replacement cost and part number for a new OES sensor module, and how do I submit a purchase order for spare parts from the vendor?
+Question embedding length: 1536
+
+CHUNK RANKING
+------------------------------------------------------------
+Chunk 15: score 0.48583843274597777
+Chunk 14: score 0.4411809979213573
+Chunk 1: score 0.43592848749978175
+Chunk 5: score 0.408426977886078
+Chunk 8: score 0.40332525024109755
+Chunk 7: score 0.38655136190122424
+Chunk 4: score 0.3707791790009088
+Chunk 6: score 0.35547552257542825
+Chunk 2: score 0.35250245312755446
+Chunk 10: score 0.3463058698248801
+Chunk 13: score 0.33508120896953414
+Chunk 12: score 0.3216582671118418
+Chunk 11: score 0.27205981715304123
+Chunk 9: score 0.2525542390660115
+Chunk 3: score 0.21922445791429096
+
+TOP 5 CHUNKS
+------------------------------------------------------------
+Chunk 15: score 0.48583843274597777
+Preview: or parts ordering, use the separate spare parts request procedure....
+
+Chunk 14: score 0.4411809979213573
+Preview:  verification test trace should remain within the approved limits for at least one full test cycle. Out of scope: This SOP does not include OES sensor replacement cost, spare parts pricing, vendor purchase orders, or pro...
+
+Chunk 1: score 0.43592848749978175
+Preview: OES Signal Troubleshooting SOP Document ID: SOP-OES-TRB-001 Revision: 2.1 Applies to: Chamber tools with OES monitoring after preventive maintenance Purpose: This procedure explains how to respond when the OES signal is ...
+
+Chunk 5: score 0.408426977886078
+Preview: OES trend plots in the equipment software. 4. Record the current OES baseline value and alarm limits in the shift log. 5. Verify that no unrelated recipe or gas line changes were made in the last 24 hours. Fiber and conn...
+
+Chunk 8: score 0.40332525024109755
+Preview: he standard OES check recipe. 2. Monitor the OES signal stability during the full test run. 3. Compare the test result against the expected stable range in the work instruction. 4. Repeat the test once if the first run s...
+
+
+BEST CHUNK
+------------------------------------------------------------
+Best chunk number: 15
+Best similarity score: 0.48583843274597777
+Preview: or parts ordering, use the separate spare parts request procedure....
+
+RELEVANCE CHECK
+------------------------------------------------------------
+Minimum relevance score: 0.71
+Has relevant context: False
+
+SOURCES
+------------------------------------------------------------
+
+
+CHECKLIST
+------------------------------------------------------------
+Raw checklist items: 0
+Validated checklist items: 0
+
+No valid checklist items found in the relevant context.
+
+Checklist file not created (no valid items to save).
+
+GROUNDED ANSWER
+------------------------------------------------------------
+I don't know based on the provided document. The retrieved context does not contain enough relevant information.
+============================================================

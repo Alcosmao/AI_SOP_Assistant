@@ -149,15 +149,15 @@ The old `app/embeddings.py` (6 keywords) is still in the project from early lear
 
 ## Examples folder
 
-Sample outputs so you can see results without running the code:
+Sample outputs from the **current OpenAI version** — no API key needed to preview:
 
 | File | What it shows |
 |---|---|
-| `examples/run_i_dont_know_output.txt` | Off-topic question → no answer |
-| `examples/run_success_output.txt` | Older success example (before OpenAI) |
-| `examples/validated_checklist.txt` | Checklist only |
-| `examples/checklist_report.txt` | Exported checklist sample |
-| `examples/README.md` | Explains the example files |
+| [examples/run_openai_success_output.txt](examples/run_openai_success_output.txt) | Good question → cosine scores, LLM answer, checklist |
+| [examples/run_openai_i_dont_know_output.txt](examples/run_openai_i_dont_know_output.txt) | Off-topic question → "I don't know" |
+| [examples/validated_checklist.txt](examples/validated_checklist.txt) | Checklist only (6 items) |
+| [examples/checklist_report.txt](examples/checklist_report.txt) | Exported checklist sample |
+| [examples/README.md](examples/README.md) | Explains each example |
 
 ---
 
@@ -178,7 +178,7 @@ Sample outputs so you can see results without running the code:
 - [ ] Support step numbers like `10.`, `11.`
 - [ ] Load multiple SOP files
 - [ ] Deploy to cloud
-- [ ] Better examples after OpenAI upgrade
+- [x] Updated examples/ with OpenAI run outputs
 
 ---
 

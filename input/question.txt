@@ -1,1 +1,11 @@
-What should I do when the OES signal is unstable after maintenance?
+After chamber preventive maintenance, the OES signal became unstable during a production run. I already confirmed the tool is in a safe state and checked for active alarms.
+
+I need help with these separate topics from the SOP only:
+
+1) OES fiber troubleshooting: inspect the fiber connection, check the connector for loose fitting or contamination, reseat the connector if required, run a verification test, and monitor signal stability.
+
+2) Safety before chamber access: what rules apply before opening any chamber or electrical cabinet, and what lockout/tagout procedure should I follow?
+
+3) Escalation: if the signal remains unstable after fiber checks, who do I escalate to?
+
+Do not answer about OES sensor replacement cost, spare parts pricing, or purchase orders — that information is not part of this procedure.

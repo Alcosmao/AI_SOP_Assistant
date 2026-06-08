@@ -3,7 +3,7 @@ from pathlib import Path
 from app.loaders import load_document, load_question
 from app.text_utils import clean_text
 from app.chunking import chunk_text
-from app.embeddings import create_simple_embedding
+from app.openai_embeddings import create_openai_embeddings
 from app.retrieval import (
     find_best_chunk,
     rank_chunks_by_similarity,
@@ -24,8 +24,8 @@ QUESTION_PATH = Path("input/question.txt")
 REPORTS_PATH = Path("reports")
 CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
-TOP_K = 3
-MINIMUM_RELEVANCE_SCORE = 3
+TOP_K = 5
+MINIMUM_RELEVANCE_SCORE = 0.71
 
 
 def main():
@@ -48,10 +48,10 @@ def main():
     chunk_embeddings = []
 
     for chunk in chunks:
-        embedding = create_simple_embedding(chunk)
+        embedding = create_openai_embeddings(chunk)
         chunk_embeddings.append(embedding)
 
-    question_embedding = create_simple_embedding(question)
+    question_embedding = create_openai_embeddings(question)
 
     ranked_chunks = rank_chunks_by_similarity(
         question_embedding,
@@ -114,7 +114,7 @@ def main():
     print("-" * 60)
     print(f"Question file: {QUESTION_PATH}")
     print(question)
-    print(f"Question embedding: {question_embedding}")
+    print(f"Question embedding length: {len(question_embedding)}")
 
     print("\nCHUNK RANKING")
     print("-" * 60)

@@ -1,21 +1,63 @@
 OES Signal Troubleshooting SOP
 
-Purpose:
-This procedure explains how to respond when the OES signal is unstable after chamber preventive maintenance.
+Document ID: SOP-OES-TRB-001
+Revision: 2.1
+Applies to: Chamber tools with OES monitoring after preventive maintenance
 
-Procedure:
+Purpose:
+This procedure explains how to respond when the OES signal is unstable, noisy, or out of range after chamber preventive maintenance, fiber handling, or connector rework.
+
+Scope:
+Use this SOP for production tools in automatic or manual mode when the OES trace shows drift, dropouts, or unstable baseline readings. Do not use this procedure for unrelated tool faults such as vacuum leaks, RF matching errors, or wafer handling failures.
+
+Prerequisites:
+1. Operator must be trained on basic tool safety and chamber access rules.
+2. Maintenance log must record the last PM date and any fiber work performed.
+3. Required items: clean wipes, fiber inspection light, ESD-safe gloves, OES verification worksheet.
+
+Initial assessment:
 1. Confirm that the tool is in a safe state.
 2. Check if there are any active alarms on the tool.
-3. Inspect the OES fiber connection.
-4. Check the fiber connector for loose fitting or contamination.
-5. Reseat the OES fiber connector if required.
-6. Run a short verification test.
-7. Monitor the OES signal stability during the test run.
-8. If the signal remains unstable, escalate the issue to the shift lead.
+3. Review the last 3 OES trend plots in the equipment software.
+4. Record the current OES baseline value and alarm limits in the shift log.
+5. Verify that no unrelated recipe or gas line changes were made in the last 24 hours.
+
+Fiber and connector inspection:
+1. Inspect the OES fiber connection at the chamber interface.
+2. Check the fiber connector for loose fitting, scratches, or contamination.
+3. Look for bent fiber, sharp bends, or damaged strain relief near the connector.
+4. Clean the connector face only with approved fiber cleaning supplies.
+5. Reseat the OES fiber connector if required and tighten to the specified seating mark.
+6. Confirm that the fiber routing matches the post-PM routing diagram.
+
+Verification test:
+1. Run a short verification test using the standard OES check recipe.
+2. Monitor the OES signal stability during the full test run.
+3. Compare the test result against the expected stable range in the work instruction.
+4. Repeat the test once if the first run shows minor instability.
+5. Save the test trace and attach it to the maintenance ticket.
+
+Escalation rules:
+1. If the signal remains unstable after fiber inspection and reseat, escalate to the shift lead.
+2. If the signal fails again after two verification tests, open a maintenance support ticket.
+3. If safety risk is suspected, stop the tool and notify the area supervisor immediately.
+4. Do not continue production runs with an unverified OES signal.
 
 Safety notes:
-Do not open any chamber or electrical cabinet unless the tool is in the correct safe state.
-Follow local lockout/tagout procedure when required.
+1. Do not open any chamber or electrical cabinet unless the tool is in the correct safe state.
+2. Follow local lockout/tagout procedure when electrical or chamber access is required.
+3. Use ESD protection when handling the OES fiber and optical connector.
+4. Do not look directly into active optical ports or test with unapproved light sources.
+5. Keep hands and tools away from hot chamber surfaces after recent process runs.
+
+Documentation requirements:
+1. Record all inspection steps in the shift log.
+2. Note whether the fiber was cleaned, reseated, or replaced.
+3. Attach OES trace screenshots to the maintenance record.
+4. Document escalation time and the name of the shift lead notified.
 
 Expected result:
-The OES signal should return to a stable range after the fiber connection is checked and reseated.
+The OES signal should return to a stable range after the fiber connection is checked and reseated. The verification test trace should remain within the approved limits for at least one full test cycle.
+
+Out of scope:
+This SOP does not include OES sensor replacement cost, spare parts pricing, vendor purchase orders, or procurement approval workflows. For parts ordering, use the separate spare parts request procedure.

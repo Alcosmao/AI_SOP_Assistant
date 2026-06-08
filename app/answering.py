@@ -1,3 +1,5 @@
+from app.openai_answer import create_openai_answer
+
 def build_context(top_chunks):
     context_parts = []
 
@@ -38,13 +40,6 @@ def create_grounded_answer(question, context, has_context, sources):
             "The retrieved context does not contain enough relevant information."            
         )
 
-    answer = (
-        "Grounded answer draft:\n"
-        "Based on the retrieved document context, the answer should be created "
-        "only from the source chunks below.\n\n"
-        f"Question:\n{question}\n\n"
-        f"Source context:\n{context}\n\n"
-        f"Sources used:\n{sources}"
-    )
+    answer = create_openai_answer(question, context, sources)
     
     return answer

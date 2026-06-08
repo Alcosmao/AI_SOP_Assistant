@@ -1,74 +1,67 @@
 # AI SOP Assistant
 
-A simple project for learning **RAG** (Retrieval-Augmented Generation) on SOP documents (Standard Operating Procedures).
+A learning project for **RAG** (Retrieval-Augmented Generation) on technical SOP documents.
 
-This is not a full AI chat app yet. It is a **Python pipeline** that shows step by step how to search a document for relevant information and build an answer from the retrieved chunks.
+I built this step by step to understand how document Q&A works: load a file, split it into chunks, find the best matching parts for a question, and generate a **grounded answer** using OpenAI — or say *"I don't know"* when the document is not good enough.
+
+This is not a production app yet. It runs in the terminal and reads the question from a file.
 
 ---
 
-## What does this project do?
+## What it does
 
-1. Loads a text file with a procedure (e.g. an OES signal SOP).
-2. Cleans the text and splits it into smaller pieces (**chunks**).
-3. Creates simple **embeddings** (number vectors based on keywords).
-4. Compares the user's question with chunks and picks the best matches.
-5. Filters out chunks with a low **relevance score**.
-6. Builds **context** and an **answer** only from good chunks.
-7. Generates a **checklist** from numbered procedure steps.
-8. Validates the checklist (format, length, duplicates).
-9. Exports the checklist to `reports/checklist.txt` (when valid items exist).
-10. Reads your **custom question** from `input/question.txt`.
+1. Loads an SOP text file (`documents/sop_oes.txt`)
+2. Reads your question from `input/question.txt`
+3. Splits the document into **chunks** (300 chars, 50 overlap)
+4. Creates **OpenAI embeddings** for each chunk and the question
+5. Ranks chunks with **cosine similarity** (score 0–1)
+6. Keeps only chunks above the relevance threshold
+7. Sends the best chunks to **OpenAI Chat** for a grounded answer
+8. Builds a **checklist** from numbered SOP steps
+9. Saves the checklist to `reports/checklist.txt`
 
-If the document does not contain good enough context, the program responds with:
-
-> *I don't know based on the provided document...*
+If context is too weak → *"I don't know based on the provided document..."*
 
 ---
 
 ## Requirements
 
-- Python **3.10+** (also works on 3.14)
-- **No external libraries** — only Python's standard library
+- Python **3.10+**
+- OpenAI API key
+
+Install packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create a `.env` file in the project root:
+
+```env
+OPENAI_API_KEY=your-key-here
+```
+
+Models used (in `app/config.py`):
+- Embeddings: `text-embedding-3-small` (1536 dimensions)
+- Chat: `gpt-5.4-mini`
 
 ---
 
 ## How to run
 
-1. Clone the repository:
-
-```bash
-git clone <your-repo-url>
-cd AI_SOP_Assistant
-```
-
-2. Edit your question in `input/question.txt` (one question per file).
-
-3. Run the program:
+1. Clone the repo and install requirements (see above)
+2. Add your API key to `.env`
+3. Edit `input/question.txt` with your question
+4. Run:
 
 ```bash
 python main.py
 ```
 
-4. The output will appear in the terminal.
-5. If a checklist is generated, it is also saved to `reports/checklist.txt`.
+5. Check the terminal output
+6. If a checklist was created, see `reports/checklist.txt`
 
-**Try another question:** copy text from `input/question_off_topic.txt` into `input/question.txt` and run again.
-
-**Note:** the `reports/` folder is created automatically and is ignored by git (local output only).
-
----
-
-## Examples
-
-The `examples/` folder contains sample pipeline outputs so you can see results without running the code:
-
-| File | Description |
-|---|---|
-| [examples/run_i_dont_know_output.txt](examples/run_i_dont_know_output.txt) | Default run — weak relevance, system refuses to answer |
-| [examples/run_success_output.txt](examples/run_success_output.txt) | Successful run — sources, checklist, grounded answer |
-| [examples/validated_checklist.txt](examples/validated_checklist.txt) | Checklist output only (7 validated steps) |
-| [examples/checklist_report.txt](examples/checklist_report.txt) | Sample exported report (same as `reports/checklist.txt`) |
-| [examples/README.md](examples/README.md) | Explains each example and how to reproduce it |
+**Try an off-topic question:** copy text from `input/question_off_topic.txt` into `input/question.txt` and run again.
 
 ---
 
@@ -76,187 +69,125 @@ The `examples/` folder contains sample pipeline outputs so you can see results w
 
 ```
 AI_SOP_Assistant/
-├── main.py                 # Main file — connects all pipeline steps
+├── main.py                   # Runs the full pipeline
+├── requirements.txt
+├── .env                      # API key (not in git)
 ├── app/
-│   ├── loaders.py          # Loads a .txt file
-│   ├── text_utils.py       # Cleans text (empty lines, etc.)
-│   ├── chunking.py         # Splits text into chunks
-│   ├── embeddings.py       # Simple keyword-based embeddings
-│   ├── retrieval.py        # Ranks chunks by similarity
-│   ├── answering.py        # Builds context and answer
-│   ├── checklist.py        # Creates a checklist from steps 1., 2., 3. ...
-│   ├── validation.py       # Validates the checklist
-│   └── export.py           # Saves checklist to reports/checklist.txt
+│   ├── config.py             # API key + model names
+│   ├── loaders.py            # Load document and question files
+│   ├── text_utils.py         # Clean text
+│   ├── chunking.py           # Split text into chunks
+│   ├── embeddings.py         # Old keyword embeddings (learning only)
+│   ├── openai_embeddings.py  # Real OpenAI embeddings
+│   ├── retrieval.py          # Cosine similarity + ranking
+│   ├── answering.py          # Build context, call LLM answer
+│   ├── openai_answer.py      # OpenAI Chat API for grounded answer
+│   ├── checklist.py          # Checklist from numbered steps
+│   ├── validation.py         # Validate checklist items
+│   └── export.py               # Save checklist to reports/
 ├── documents/
-│   └── sop_oes.txt         # Sample SOP document
+│   └── sop_oes.txt           # OES troubleshooting SOP (longer demo doc)
 ├── input/
-│   ├── question.txt        # Your question (read on each run)
-│   └── question_off_topic.txt  # Example: question not in the SOP
-├── reports/                # Generated checklist files (created on run, gitignored)
-└── examples/
-    ├── README.md           # Guide to sample outputs
-    ├── run_i_dont_know_output.txt
-    ├── run_success_output.txt
-    ├── validated_checklist.txt
-    └── checklist_report.txt
+│   ├── question.txt          # Your question (used on each run)
+│   └── question_off_topic.txt
+├── reports/                  # Generated checklist (gitignored)
+└── examples/                 # Sample outputs for portfolio
 ```
 
 ---
 
-## How the pipeline works (step by step)
+## Pipeline (simple view)
 
 ```
-SOP document
+SOP file + question file
     ↓
-load_document()              → load the file
+chunk document (15 chunks from current SOP)
     ↓
-load_question()              → read question from input/question.txt
+OpenAI embeddings (text → 1536 numbers)
     ↓
-clean_text()                 → remove empty lines
+cosine similarity (question vs each chunk)
     ↓
-chunk_text()                 → split into 300-character pieces
+top 5 chunks → filter by score >= 0.71
     ↓
-create_simple_embedding()    → number vector for each chunk
+build context + sources
     ↓
-rank_chunks_by_similarity()  → which chunks match the question?
+OpenAI Chat → grounded answer
     ↓
-get_top_k_chunks()           → pick the TOP 3 best chunks
-    ↓
-relevance filter             → only chunks with score >= threshold
-    ↓
-build_context()              → source text for the answer
-build_source_list()          → list of sources
-    ↓
-generate_checklist_from_text() → checklist from steps
-validate_checklist_items()    → clean checklist
-    ↓
-save_checklist_to_txt()      → save to reports/checklist.txt
-    ↓
-create_grounded_answer()     → answer or "I don't know..."
+checklist + export to reports/checklist.txt
 ```
 
 ---
 
 ## Settings in `main.py`
 
-You can change these values at the top of `main.py`:
-
-| Constant | Default | What it does |
+| Constant | Current value | What it does |
 |---|---|---|
-| `DOCUMENT_PATH` | `documents/sop_oes.txt` | Path to the document |
-| `QUESTION_PATH` | `input/question.txt` | Path to your question file |
-| `CHUNK_SIZE` | `300` | Size of one chunk (characters) |
-| `CHUNK_OVERLAP` | `50` | How many characters overlap between chunks |
-| `TOP_K` | `3` | How many best chunks to retrieve |
-| `MINIMUM_RELEVANCE_SCORE` | `3` | Minimum score for a chunk to be used |
-| `REPORTS_PATH` | `reports` | Folder for exported checklist `.txt` files |
+| `DOCUMENT_PATH` | `documents/sop_oes.txt` | SOP file |
+| `QUESTION_PATH` | `input/question.txt` | Question file |
+| `CHUNK_SIZE` | `300` | Chunk size in characters |
+| `CHUNK_OVERLAP` | `50` | Overlap between chunks |
+| `TOP_K` | `5` | How many best chunks to retrieve |
+| `MINIMUM_RELEVANCE_SCORE` | `0.71` | Min cosine score to use a chunk |
+| `REPORTS_PATH` | `reports` | Checklist export folder |
 
-**Change the question:** edit `input/question.txt` and run `python main.py` again. No code changes needed.
+**Note on scores:** with OpenAI embeddings, similarity scores are between **0 and 1** (not 3 or 5 like the old keyword version). Higher = more similar meaning.
 
-**Example questions included:**
-- `input/question.txt` — good match for the SOP (checklist + answer)
-- `input/question_off_topic.txt` — asks about sensor cost (not in document → *"I don't know"*)
+**Note on TOP_K:** I use `5` because my question has multiple topics. With `TOP_K = 3` the LLM sometimes missed the fiber troubleshooting chunk.
 
 ---
 
-## How embeddings work (simplified)
+## How retrieval works (short)
 
-This is **not** OpenAI or a real language model. It is a simple version for learning.
+- Each text becomes a vector of **1536 numbers** (embedding)
+- `calculate_cosine_similarity()` compares question vs chunk
+- Example from testing: similar texts ~0.68, unrelated texts ~0.05
+- Only chunks above the threshold go to the LLM
 
-The program uses a list of keywords:
-
-`oes`, `signal`, `fiber`, `alarm`, `safety`, `test`
-
-For each text, it counts how many times each keyword appears. Example:
-
-- question *"What is the replacement cost of the OES sensor?"* → `[1, 0, 0, 0, 0, 0]`
-- a chunk about OES → higher score because it has more matching words
-
-Then `calculate_similarity()` multiplies the vectors and sums the result — the higher the score, the more similar they are.
+The old `app/embeddings.py` (6 keywords) is still in the project from early learning steps but is **not used** in `main.py` anymore.
 
 ---
 
-## Checklist — what happens
+## Examples folder
 
-1. **`generate_checklist_from_text()`** looks for lines in the format `1.`, `2.`, `3.` ...
-2. Removes the number and adds `[ ]` at the start.
-3. **`validate_checklist_items()`** checks:
-   - does it start with `[ ] `?
-   - is the text at least 15 characters long?
-   - does it end with a period `.`?
-   - are there any duplicates?
+Sample outputs so you can see results without running the code:
 
-Example output:
-
-```
-[ ] Confirm that the tool is in a safe state.
-[ ] Check if there are any active alarms on the tool.
-[ ] Inspect the OES fiber connection.
-```
-
-The checklist is built **only** from relevant chunks (after the score filter).
-
-### Export to file
-
-If there are validated checklist items, they are saved to:
-
-```
-reports/checklist.txt
-```
-
-Example file content:
-
-```
-[ ] Confirm that the tool is in a safe state.
-[ ] Check if there are any active alarms on the tool.
-[ ] Inspect the OES fiber connection.
-```
-
-If there are no valid items (e.g. `"I don't know"` run), no file is created.
-
-See sample export: [examples/checklist_report.txt](examples/checklist_report.txt)
+| File | What it shows |
+|---|---|
+| `examples/run_i_dont_know_output.txt` | Off-topic question → no answer |
+| `examples/run_success_output.txt` | Older success example (before OpenAI) |
+| `examples/validated_checklist.txt` | Checklist only |
+| `examples/checklist_report.txt` | Exported checklist sample |
+| `examples/README.md` | Explains the example files |
 
 ---
 
-## Sample document
+## What works now
 
-`documents/sop_oes.txt` contains the **OES Signal Troubleshooting SOP** — what to do when the OES signal is unstable after maintenance.
-
----
-
-## What this project **does not do yet**
-
-This is intentionally a simple learning project:
-
-- no real LLM (ChatGPT, etc.)
-- no API or web interface
-- no vector database
-- embeddings based on only 6 keywords
-- step numbering works only for the `1.` format (not `10.` or `1)`)
-- question comes from a file, not interactive typing in the terminal
-
----
-
-## Ideas for future improvements
-
-- [ ] Connect a real embedding model
-- [ ] Integrate an LLM to generate answers
+- [x] Full RAG pipeline
+- [x] OpenAI embeddings
+- [x] Cosine similarity
+- [x] Relevance filtering
+- [x] OpenAI grounded answers
+- [x] Checklist generation + export
 - [x] Custom question from `input/question.txt`
-- [ ] Load multiple SOP documents
-- [x] Export checklist to a `.txt` file (`reports/checklist.txt`)
-- [ ] Support steps like `10.`, `11.`, etc.
-- [x] Add `examples/` folder with sample runs
+- [x] Examples folder
+
+## What I still want to add
+
+- [ ] FastAPI endpoint
+- [ ] Support step numbers like `10.`, `11.`
+- [ ] Load multiple SOP files
+- [ ] Deploy to cloud
+- [ ] Better examples after OpenAI upgrade
 
 ---
 
 ## Project status
 
-Work in progress — I am building this step by step to understand RAG from the ground up.
-
-If something does not work or you have an idea for improvement, feel free to open an issue or PR.
+Learning project — built step by step with AI-assisted coding while studying RAG, embeddings, and OpenAI API. I can explain the pipeline and each module.
 
 ---
 
 ## License
 
-Educational project — free to use for learning and modify as you like.
+Educational project — free to use for learning.

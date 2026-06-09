@@ -1,0 +1,14 @@
+{
+  "question": "How do I inspect and reseat the OES fiber connector?",
+  "has_context": true,
+  "answer": "To inspect and reseat the OES fiber connector:\n\n1. Check the OES fiber connection at the chamber interface.\n2. Inspect the fiber connector for loose fitting, scratches, or contamination.\n3. Look for bent fiber, sharp bends, or damaged strain relief near the connector.\n4. Clean the connector face only with approved fiber cleaning supplies.\n5. Reseat the OES fiber connector if required and tighten to the specified seating mark.\n6. Confirm that the fiber routing matches the post-PM routing diagram.",
+  "sources": "- [Source chunk 7] similarity score: 0.755302198667387\n- [Source chunk 6] similarity score: 0.747061176754055",
+  "checklist": [
+    "[ ] Reseat the OES fiber connector if required and tighten to the specified seating mark.",
+    "[ ] Confirm that the fiber routing matches the post-PM routing diagram.",
+    "[ ] Run a short verification test using the standard OES check recipe.",
+    "[ ] Check the fiber connector for loose fitting, scratches, or contamination.",
+    "[ ] Look for bent fiber, sharp bends, or damaged strain relief near the connector.",
+    "[ ] Clean the connector face only with approved fiber cleaning supplies."
+  ]
+}

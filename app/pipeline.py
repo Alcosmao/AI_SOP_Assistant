@@ -23,7 +23,7 @@ REPORTS_PATH = Path("reports")
 CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
 TOP_K = 5
-MINIMUM_RELEVANCE_SCORE = 0.71
+MINIMUM_RELEVANCE_SCORE = 0.65
 
 def run_rag_pipeline(question: str, documenth_path: Path = DOCUMENT_PATH):
     document_text = load_document(documenth_path)

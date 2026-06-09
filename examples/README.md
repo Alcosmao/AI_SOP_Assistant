@@ -18,6 +18,7 @@ These examples are from the **current OpenAI version** of the project:
 | `run_openai_i_dont_know_output.txt` | Off-topic question → no relevant chunks → "I don't know" |
 | `validated_checklist.txt` | Checklist only (6 items from success run) |
 | `checklist_report.txt` | Same checklist saved to `reports/checklist.txt` |
+| `api_response.json` | Sample JSON returned by the FastAPI `POST /ask` endpoint |
 
 ---
 
@@ -58,6 +59,22 @@ See: `run_openai_success_output.txt`
 This is correct — the SOP says pricing is out of scope.
 
 See: `run_openai_i_dont_know_output.txt`
+
+---
+
+## Example 3 — API response (`POST /ask`)
+
+**Question:** *"How do I inspect and reseat the OES fiber connector?"*
+
+**What happened:**
+- Sent as JSON to the FastAPI endpoint `POST /ask`
+- Specific question → matched the fiber/connector step chunks (chunk 7 + chunk 6)
+- `has_context: true`, full grounded answer, 6 checklist items
+- Returned as clean JSON (no debug/ranking fields — the API only exposes what a client needs)
+
+See: `api_response.json`
+
+**Note:** a short, generic question (e.g. *"What should I do when the OES signal is unstable?"*) tends to match the SOP **header/scope** chunk instead of the step chunks, which can lead to a *"I don't know"* answer. Retrieval quality depends on how specific the question is — this is normal RAG behavior.
 
 ---
 

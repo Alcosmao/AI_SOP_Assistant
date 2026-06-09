@@ -4,7 +4,7 @@ A learning project for **RAG** (Retrieval-Augmented Generation) on technical SOP
 
 I built this step by step to understand how document Q&A works: load a file, split it into chunks, find the best matching parts for a question, and generate a **grounded answer** using OpenAI — or say *"I don't know"* when the document is not good enough.
 
-This is not a production app yet. It runs in the terminal and reads the question from a file.
+It runs two ways: in the **terminal** (reads the question from a file) and as a **REST API** built with **FastAPI** (send a question over HTTP, get JSON back). Both use the same RAG pipeline under the hood.
 
 ---
 
@@ -65,15 +65,64 @@ python main.py
 
 ---
 
+## Run as an API (FastAPI)
+
+The same pipeline is also exposed as a REST API. Start the server:
+
+```bash
+python -m uvicorn api:app --reload
+```
+
+> On Windows, use `python -m uvicorn ...` (the bare `uvicorn` command may not be on PATH).
+
+Then open the interactive docs (Swagger UI):
+
+```
+http://127.0.0.1:8000/docs
+```
+
+### Endpoints
+
+| Method | Path | What it does |
+|---|---|---|
+| `GET` | `/health` | Health check → `{"status": "ok"}` |
+| `POST` | `/ask` | Send a question, get a grounded answer + sources + checklist |
+
+### Example request
+
+`POST /ask` with body:
+
+```json
+{ "question": "How do I inspect and reseat the OES fiber connector?" }
+```
+
+Example response: see [examples/api_response.json](examples/api_response.json).
+
+### Error handling
+
+| Situation | Status code |
+|---|---|
+| Question is empty (`""`) | `422` (Pydantic validation) |
+| Question is only whitespace | `400` Bad Request |
+| SOP document not found on server | `404` Not Found |
+| Valid question | `200` OK |
+
+> `POST /ask` calls OpenAI (embeddings + chat), so a response takes a few seconds. You cannot test `POST /ask` by typing the URL in a browser — a browser address bar sends a `GET`. Use Swagger `/docs` or a tool like `curl` / Postman.
+
+---
+
 ## Project structure
 
 ```
 AI_SOP_Assistant/
-├── main.py                   # Runs the full pipeline
+├── main.py                   # Terminal entry point (CLI)
+├── api.py                    # FastAPI app (REST API)
 ├── requirements.txt
 ├── .env                      # API key (not in git)
 ├── app/
 │   ├── config.py             # API key + model names
+│   ├── pipeline.py           # run_rag_pipeline() — shared RAG logic (CLI + API)
+│   ├── schemas.py            # Pydantic models (AskRequest, AskResponse)
 │   ├── loaders.py            # Load document and question files
 │   ├── text_utils.py         # Clean text
 │   ├── chunking.py           # Split text into chunks
@@ -107,7 +156,7 @@ OpenAI embeddings (text → 1536 numbers)
     ↓
 cosine similarity (question vs each chunk)
     ↓
-top 5 chunks → filter by score >= 0.71
+top 5 chunks → filter by score >= 0.65
     ↓
 build context + sources
     ↓
@@ -118,17 +167,19 @@ checklist + export to reports/checklist.txt
 
 ---
 
-## Settings in `main.py`
+## Settings
 
-| Constant | Current value | What it does |
-|---|---|---|
-| `DOCUMENT_PATH` | `documents/sop_oes.txt` | SOP file |
-| `QUESTION_PATH` | `input/question.txt` | Question file |
-| `CHUNK_SIZE` | `300` | Chunk size in characters |
-| `CHUNK_OVERLAP` | `50` | Overlap between chunks |
-| `TOP_K` | `5` | How many best chunks to retrieve |
-| `MINIMUM_RELEVANCE_SCORE` | `0.71` | Min cosine score to use a chunk |
-| `REPORTS_PATH` | `reports` | Checklist export folder |
+The pipeline constants live in `app/pipeline.py` (shared by the CLI and the API). The question file path lives in `main.py` (CLI only).
+
+| Constant | Where | Current value | What it does |
+|---|---|---|---|
+| `DOCUMENT_PATH` | `app/pipeline.py` | `documents/sop_oes.txt` | SOP file |
+| `QUESTION_PATH` | `main.py` | `input/question.txt` | Question file (CLI) |
+| `CHUNK_SIZE` | `app/pipeline.py` | `300` | Chunk size in characters |
+| `CHUNK_OVERLAP` | `app/pipeline.py` | `50` | Overlap between chunks |
+| `TOP_K` | `app/pipeline.py` | `5` | How many best chunks to retrieve |
+| `MINIMUM_RELEVANCE_SCORE` | `app/pipeline.py` | `0.65` | Min cosine score to use a chunk |
+| `REPORTS_PATH` | `app/pipeline.py` | `reports` | Checklist export folder |
 
 **Note on scores:** with OpenAI embeddings, similarity scores are between **0 and 1** (not 3 or 5 like the old keyword version). Higher = more similar meaning.
 
@@ -157,6 +208,7 @@ Sample outputs from the **current OpenAI version** — no API key needed to prev
 | [examples/run_openai_i_dont_know_output.txt](examples/run_openai_i_dont_know_output.txt) | Off-topic question → "I don't know" |
 | [examples/validated_checklist.txt](examples/validated_checklist.txt) | Checklist only (6 items) |
 | [examples/checklist_report.txt](examples/checklist_report.txt) | Exported checklist sample |
+| [examples/api_response.json](examples/api_response.json) | Sample `POST /ask` JSON response from the API |
 | [examples/README.md](examples/README.md) | Explains each example |
 
 ---
@@ -171,20 +223,21 @@ Sample outputs from the **current OpenAI version** — no API key needed to prev
 - [x] Checklist generation + export
 - [x] Custom question from `input/question.txt`
 - [x] Examples folder
+- [x] FastAPI REST API (`GET /health`, `POST /ask`) with error handling
 
 ## What I still want to add
 
-- [ ] FastAPI endpoint
 - [ ] Support step numbers like `10.`, `11.`
 - [ ] Load multiple SOP files
 - [ ] Deploy to cloud
+- [x] FastAPI endpoint
 - [x] Updated examples/ with OpenAI run outputs
 
 ---
 
 ## Project status
 
-Learning project — built step by step with AI-assisted coding while studying RAG, embeddings, and OpenAI API. I can explain the pipeline and each module.
+Learning project — built step by step with AI-assisted coding while studying RAG, embeddings, the OpenAI API, and FastAPI. I can explain the pipeline, the API layer, and each module.
 
 ---
 

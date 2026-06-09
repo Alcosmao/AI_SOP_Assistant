@@ -2,11 +2,15 @@
 
 Sample outputs from the project. I added these so you can see what the pipeline does **without running it yourself** or paying for OpenAI API calls.
 
-These examples are from the **current OpenAI version** of the project:
+These examples are from the **OpenAI version** of the project:
 - OpenAI embeddings (`text-embedding-3-small`)
 - Cosine similarity scores (0–1)
 - OpenAI Chat answer (`gpt-5.4-mini`)
-- `TOP_K = 5`, relevance threshold `0.71`
+- `TOP_K = 5`
+
+> Note: the text examples below were captured with `MINIMUM_RELEVANCE_SCORE = 0.71`.
+> The current default in `app/pipeline.py` is `0.65` (a lower threshold lets more
+> chunks through). The `api_response.json` example reflects the current setup.
 
 ---
 

@@ -8,6 +8,21 @@ It runs two ways: in the **terminal** (reads the question from a file) and as a 
 
 ---
 
+## Demo
+
+> The flow: `GET /documents` to see what is available → `POST /ask` with a
+> question and a `document_name` → grounded answer + sources + checklist.
+
+<!--
+TODO: record a short clip and save it as docs/demo.gif, then uncomment the line below.
+Suggested clip: GET /documents -> pick a document -> POST /ask -> answer + checklist.
+
+![Demo: list documents, ask a question, get a grounded answer](docs/demo.gif)
+-->
+_Demo GIF coming soon._
+
+---
+
 ## What it does
 
 1. Loads the chosen document through the storage layer (e.g. `sop_oes.txt`)
@@ -341,7 +356,10 @@ The pipeline constants live in `app/pipeline.py` (shared by the CLI and the API)
 - Example from testing: similar texts ~0.68, unrelated texts ~0.05
 - Only chunks above the threshold go to the LLM
 
-The old `app/embeddings.py` (6 keywords) is still in the project from early learning steps but is **not used** in `main.py` anymore.
+The old `app/embeddings.py` (6 keywords) is kept on purpose as a **legacy /
+learning** file (it has a comment saying so at the top). It is **not used** in
+the pipeline anymore — the project moved to real semantic embeddings in
+`app/openai_embeddings.py`, which understand meaning instead of counting words.
 
 ---
 

@@ -9,8 +9,8 @@ def main():
     DOCUMENT_NAME = "sop_oes.txt"
 
     if question is None:
-        print("Question file not found or emtpy")
-        print(f"Createa a file at: {QUESTION_PATH}")
+        print("Question file not found or empty")
+        print(f"Create a file at: {QUESTION_PATH}")
         return
     try:
         result = run_rag_pipeline(question, DOCUMENT_NAME)

@@ -392,7 +392,7 @@ Sample outputs from the **current OpenAI version** — no API key needed to prev
 
 ## What I still want to add
 
-- [ ] Support step numbers like `10.`, `11.`
+- [x] Support step numbers like `10.`, `11.`
 - [ ] Load multiple SOP files
 - [ ] Deploy to cloud
 - [x] FastAPI endpoint

@@ -8,6 +8,12 @@ def test_is_numbered_step():
     assert is_numbered_step("1") is False
 
 
+def test_is_numbered_step_supports_multi_digit():
+    assert is_numbered_step("10. Do something") is True
+    assert is_numbered_step("11. Do something") is True
+    assert is_numbered_step("100. Do something") is True
+
+
 def test_generate_checklist_only_keeps_numbered_lines():
     text = "1. First step\n2. Second step\nthis is not a step"
     items = generate_checklist_from_text(text)

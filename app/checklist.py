@@ -1,13 +1,11 @@
 def is_numbered_step(line):
     line = line.strip()
 
-    if len(line) < 3:
+    if "." not in line:
         return False
+    before_dot = line.split(".", 1)[0]
     
-    first_character = line[0]
-    second_character = line[1]
-
-    return first_character.isdigit() and second_character == "."
+    return before_dot.isdigit()
 
 def remove_step_number(line):
     return line.split(".",1)[1].strip()

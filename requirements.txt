@@ -5,3 +5,6 @@ uvicorn
 
 # Only needed when STORAGE_MODE=blob (Azure Blob Storage / Azurite)
 azure-storage-blob
+
+# Dev only: running the tests
+pytest

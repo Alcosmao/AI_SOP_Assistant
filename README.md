@@ -209,6 +209,23 @@ AZURE_STORAGE_CONTAINER_NAME=documents
 
 ---
 
+## Running the tests
+
+The project has **unit tests** for the deterministic logic (storage, cosine
+similarity, ranking, chunking, text cleaning, checklist building/validation).
+They do **not** call OpenAI, so they are fast and free.
+
+```bash
+pip install pytest
+python -m pytest -q
+```
+
+Expected: all tests pass (currently 22). The OpenAI-dependent parts
+(embeddings, chat answer, full pipeline) are intentionally not unit-tested to
+avoid paid API calls.
+
+---
+
 ## Project structure
 
 ```
@@ -244,8 +261,9 @@ AI_SOP_Assistant/
 │   ├── question.txt          # Your question (used on each run)
 │   └── question_off_topic.txt
 ├── reports/                  # Generated checklist (gitignored)
-└── examples/                 # Sample outputs + safe sample SOP for portfolio
-    └── sample_sop.txt        # Fake SOP, safe to share publicly
+├── examples/                 # Sample outputs + safe sample SOP for portfolio
+│   └── sample_sop.txt        # Fake SOP, safe to share publicly
+└── tests/                    # pytest functionality tests (no OpenAI calls)
 ```
 
 ---

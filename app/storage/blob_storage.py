@@ -19,3 +19,12 @@ class BlobDocumentStorage:
             return data.decode("utf-8")
         except ResourceNotFoundError:
             return None
+    
+    def list_documents(self) -> list[str]:
+        container_client = self.service_client.get_container_client(self.container_name)
+
+        names = []
+        for blob in container_client.list_blobs():
+            names.append(blob.name)
+
+        return sorted(names)

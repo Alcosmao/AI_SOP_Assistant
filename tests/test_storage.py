@@ -16,6 +16,30 @@ def test_local_storage_returns_none_for_missing_file(tmp_path):
     assert storage.read_document("does_not_exist.txt") is None
 
 
+def test_list_documents_returns_sorted_names(tmp_path):
+    (tmp_path / "b.txt").write_text("x", encoding="utf-8")
+    (tmp_path / "a.txt").write_text("y", encoding="utf-8")
+
+    storage = LocalDocumentStorage(str(tmp_path))
+
+    assert storage.list_documents() == ["a.txt", "b.txt"]
+
+
+def test_list_documents_skips_hidden_files(tmp_path):
+    (tmp_path / "doc.txt").write_text("x", encoding="utf-8")
+    (tmp_path / ".gitkeep").write_text("", encoding="utf-8")
+
+    storage = LocalDocumentStorage(str(tmp_path))
+
+    assert storage.list_documents() == ["doc.txt"]
+
+
+def test_list_documents_empty_when_folder_missing(tmp_path):
+    storage = LocalDocumentStorage(str(tmp_path / "missing"))
+
+    assert storage.list_documents() == []
+
+
 def test_factory_returns_local_storage_by_default():
     storage = factory.get_storage()
 

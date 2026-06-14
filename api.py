@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 
 from app.schemas import AskRequest, AskResponse
 from app.pipeline import run_rag_pipeline
+from app.storage.factory import get_storage
 
 app = FastAPI(
     title="SOP RAG API",
@@ -14,6 +15,11 @@ app = FastAPI(
 def health():
     return {"status": "ok"}
 
+@app.get("/documents")
+def list_documents():
+    storage = get_storage()
+    return {"documents": storage.list_documents()}
+
 
 @app.post("/ask", response_model=AskResponse)
 def ask(request: AskRequest):
@@ -24,9 +30,8 @@ def ask(request: AskRequest):
             status_code=400,
             detail="Question cannot be empty",
         )
-
     try:
-        result = run_rag_pipeline(question)
+        result = run_rag_pipeline(question, request.document_name)
     except FileNotFoundError:
         raise HTTPException(
             status_code=404,

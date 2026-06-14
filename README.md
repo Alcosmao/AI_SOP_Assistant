@@ -10,8 +10,8 @@ It runs two ways: in the **terminal** (reads the question from a file) and as a 
 
 ## What it does
 
-1. Loads an SOP text file (`documents/sop_oes.txt`)
-2. Reads your question from `input/question.txt`
+1. Loads the chosen document through the storage layer (e.g. `sop_oes.txt`)
+2. Reads your question (from `input/question.txt` in the CLI, or the request in the API)
 3. Splits the document into **chunks** (300 chars, 50 overlap)
 4. Creates **OpenAI embeddings** for each chunk and the question
 5. Ranks chunks with **cosine similarity** (score 0–1)
@@ -98,14 +98,38 @@ http://127.0.0.1:8000/docs
 | Method | Path | What it does |
 |---|---|---|
 | `GET` | `/health` | Health check → `{"status": "ok"}` |
-| `POST` | `/ask` | Send a question, get a grounded answer + sources + checklist |
+| `GET` | `/documents` | List the document names available in the current storage |
+| `POST` | `/ask` | Ask a question **about a chosen document**, get a grounded answer + sources + checklist |
+
+### Choosing a document (important)
+
+The app can hold **several independent documents** (knowledge bases). A request
+has **two separate inputs**:
+
+- `document_name` — **which** document to search in (the knowledge base)
+- `question` — **what** you want to know
+
+The system answers **only** from the chosen document. If you ask something that
+the selected document does not cover, you get an honest *"I don't know"* — this
+is intentional (grounding), not a bug.
+
+> The repo ships with two **unrelated** troubleshooting documents on purpose
+> (e.g. an OES fiber SOP and a network connectivity SOP). This demonstrates that
+> documents are independent: pick one, ask a question relevant to it. Asking an
+> OES question against the network document will correctly return *"I don't know"*.
+
+Typical flow: call `GET /documents` to see what is available, pick one, then
+send it with your question to `POST /ask`.
 
 ### Example request
 
 `POST /ask` with body:
 
 ```json
-{ "question": "How do I inspect and reseat the OES fiber connector?" }
+{
+  "question": "How do I inspect and reseat the OES fiber connector?",
+  "document_name": "sop_oes.txt"
+}
 ```
 
 Example response: see [examples/api_response.json](examples/api_response.json).
@@ -114,10 +138,10 @@ Example response: see [examples/api_response.json](examples/api_response.json).
 
 | Situation | Status code |
 |---|---|
-| Question is empty (`""`) | `422` (Pydantic validation) |
+| Question is empty (`""`) or `document_name` missing | `422` (Pydantic validation) |
 | Question is only whitespace | `400` Bad Request |
-| SOP document not found on server | `404` Not Found |
-| Valid question | `200` OK |
+| Chosen document not found in storage | `404` Not Found |
+| Valid question + existing document | `200` OK |
 
 > `POST /ask` calls OpenAI (embeddings + chat), so a response takes a few seconds. You cannot test `POST /ask` by typing the URL in a browser — a browser address bar sends a `GET`. Use Swagger `/docs` or a tool like `curl` / Postman.
 
@@ -296,7 +320,7 @@ The pipeline constants live in `app/pipeline.py` (shared by the CLI and the API)
 
 | Constant | Where | Current value | What it does |
 |---|---|---|---|
-| `DOCUMENT_NAME` | `app/pipeline.py` | `sop_oes.txt` | SOP file name (resolved by the storage layer) |
+| `DOCUMENT_NAME` | `main.py` | `sop_oes.txt` | Which document the CLI analyzes (the API takes it from the request instead) |
 | `QUESTION_PATH` | `main.py` | `input/question.txt` | Question file (CLI) |
 | `CHUNK_SIZE` | `app/pipeline.py` | `300` | Chunk size in characters |
 | `CHUNK_OVERLAP` | `app/pipeline.py` | `50` | Overlap between chunks |

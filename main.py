@@ -6,13 +6,14 @@ QUESTION_PATH = Path("input/question.txt")
 
 def main():
     question = load_question(QUESTION_PATH)
+    DOCUMENT_NAME = "sop_oes.txt"
 
     if question is None:
         print("Question file not found or emtpy")
         print(f"Createa a file at: {QUESTION_PATH}")
         return
     try:
-        result = run_rag_pipeline(question)
+        result = run_rag_pipeline(question, DOCUMENT_NAME)
     except FileNotFoundError as error:
         print(error)
         return

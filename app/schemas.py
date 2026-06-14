@@ -6,6 +6,11 @@ class AskRequest(BaseModel):
         min_length=1,
         description="User question about the SOP document"
     )
+    document_name: str = Field(
+        ...,
+        min_length=1,
+        description="Name of the document to analyze (e.g. sop_oes.txt)"
+    )
 
 class AskResponse(BaseModel):
     question: str

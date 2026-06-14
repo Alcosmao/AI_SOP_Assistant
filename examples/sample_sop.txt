@@ -1,0 +1,27 @@
+Sample SOP (fictional, safe for public repo)
+Document ID: SOP-SAMPLE-001
+Revision: 1.0
+Purpose: This is a fake, generic Standard Operating Procedure used only as a
+safe demo document. It contains no real company data, manuals, or tickets.
+
+Scope:
+Use this sample to try the RAG pipeline without exposing any private documents.
+Copy this file into the "documents/" folder and point DOCUMENT_NAME at it, or
+upload it to your Azurite/Azure container when testing blob mode.
+
+Procedure:
+1. Confirm the workspace is in a safe state before starting.
+2. Check that all required tools are available.
+3. Inspect the target component for visible issues.
+4. Clean the component using approved supplies only.
+5. Reassemble the component and verify it is seated correctly.
+6. Run a short verification test and record the result.
+7. Monitor the system for stable behavior after the test.
+
+Safety notes:
+1. Do not start work unless the area is confirmed safe.
+2. Follow your local lockout/tagout procedure before accessing internal parts.
+3. Stop and notify a supervisor if anything looks unusual.
+
+Escalation:
+If the issue continues after these steps, escalate to the shift supervisor.

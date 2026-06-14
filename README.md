@@ -35,11 +35,23 @@ Install packages:
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root. The easiest way is to copy the
+provided template and fill in your own values:
+
+```bash
+copy .env.example .env   # Windows
+# cp .env.example .env   # macOS / Linux
+```
+
+Minimum you need:
 
 ```env
 OPENAI_API_KEY=your-key-here
 ```
+
+The `.env.example` file also lists the storage settings (see
+[Storage abstraction](#storage-abstraction) below). Your real `.env` is
+gitignored and must never be committed.
 
 Models used (in `app/config.py`):
 - Embeddings: `text-embedding-3-small` (1536 dimensions)
@@ -111,6 +123,92 @@ Example response: see [examples/api_response.json](examples/api_response.json).
 
 ---
 
+## Storage abstraction
+
+The app does **not** read documents from a hardcoded file path anymore. Instead
+it talks to a small **storage layer**, so the same pipeline can read documents
+from different places without changing any logic.
+
+This is a common, beginner-friendly design pattern (often called *strategy* +
+*factory*). It makes the project **cloud-ready** and easy to extend.
+
+**How it works (plain words):**
+
+- `app/storage/base.py` — defines *what* a storage must look like (one method:
+  `read_document(name) -> str | None`). It is just a contract.
+- `app/storage/local_storage.py` — reads documents from the **local filesystem**.
+- `app/storage/blob_storage.py` — reads documents from **Azure Blob Storage**
+  (or the **Azurite** local emulator). The Azure library is imported lazily, so
+  local mode works without installing it.
+- `app/storage/factory.py` — `get_storage()` picks the right backend based on
+  the `STORAGE_MODE` setting.
+
+```
+run_rag_pipeline()
+    -> get_storage()        # factory picks backend from STORAGE_MODE
+    -> storage.read_document("sop_oes.txt")
+                            # local: reads documents/sop_oes.txt
+                            # blob:  reads blob from the container
+```
+
+The pipeline only asks for a document **by name** — it does not know (or care)
+whether the file comes from disk or the cloud.
+
+### Storage settings (in `.env`)
+
+| Variable | What it does | Example |
+|---|---|---|
+| `STORAGE_MODE` | Which backend to use: `local` or `blob` | `local` |
+| `DOCUMENTS_PATH` | Local folder with documents (local mode) | `documents` |
+| `AZURE_STORAGE_CONNECTION_STRING` | Connection string (blob mode) | `UseDevelopmentStorage=true` |
+| `AZURE_STORAGE_CONTAINER_NAME` | Container name (blob mode) | `documents` |
+
+### Run in local mode (default)
+
+Nothing special to do — `STORAGE_MODE` defaults to `local`:
+
+```bash
+python main.py
+```
+
+It reads `documents/sop_oes.txt` exactly like before.
+
+### Run in blob mode with Azurite (optional, no real Azure needed)
+
+[Azurite](https://learn.microsoft.com/azure/storage/common/storage-use-azurite)
+is a free **local emulator** of Azure Storage. It lets you test blob mode on your
+own machine **without creating any real Azure resources or paying anything**.
+
+1. Install the Azure library (only needed for blob mode):
+
+```bash
+pip install azure-storage-blob
+```
+
+2. Start Azurite (needs Node.js or Docker):
+
+```bash
+npm install -g azurite && azurite
+# or with Docker:
+# docker run -p 10000:10000 mcr.microsoft.com/azure-storage/azurite
+```
+
+3. In `.env` switch to blob mode:
+
+```env
+STORAGE_MODE=blob
+AZURE_STORAGE_CONNECTION_STRING=UseDevelopmentStorage=true
+AZURE_STORAGE_CONTAINER_NAME=documents
+```
+
+4. Upload your SOP file into the `documents` container, then run `python main.py`.
+   The result is the same — only the source of the file changed.
+
+> Real Azure Blob Storage would work the same way: just use a real connection
+> string instead of the Azurite one. **No code changes needed.**
+
+---
+
 ## Project structure
 
 ```
@@ -118,12 +216,13 @@ AI_SOP_Assistant/
 ├── main.py                   # Terminal entry point (CLI)
 ├── api.py                    # FastAPI app (REST API)
 ├── requirements.txt
-├── .env                      # API key (not in git)
+├── .env                      # API key + storage settings (not in git)
+├── .env.example              # Template for .env (placeholders only)
 ├── app/
-│   ├── config.py             # API key + model names
+│   ├── config.py             # API key + model names + storage settings
 │   ├── pipeline.py           # run_rag_pipeline() — shared RAG logic (CLI + API)
 │   ├── schemas.py            # Pydantic models (AskRequest, AskResponse)
-│   ├── loaders.py            # Load document and question files
+│   ├── loaders.py            # Load the question file (CLI)
 │   ├── text_utils.py         # Clean text
 │   ├── chunking.py           # Split text into chunks
 │   ├── embeddings.py         # Old keyword embeddings (learning only)
@@ -133,14 +232,20 @@ AI_SOP_Assistant/
 │   ├── openai_answer.py      # OpenAI Chat API for grounded answer
 │   ├── checklist.py          # Checklist from numbered steps
 │   ├── validation.py         # Validate checklist items
-│   └── export.py               # Save checklist to reports/
-├── documents/
-│   └── sop_oes.txt           # OES troubleshooting SOP (longer demo doc)
+│   ├── export.py             # Save checklist to reports/
+│   └── storage/              # Storage abstraction (local / blob)
+│       ├── base.py           # DocumentStorage contract (interface)
+│       ├── local_storage.py  # Read from local filesystem
+│       ├── blob_storage.py   # Read from Azure Blob / Azurite
+│       └── factory.py        # get_storage() picks backend
+├── documents/                # Your private documents (gitignored)
+│   └── .gitkeep              # Keeps the empty folder in git
 ├── input/
 │   ├── question.txt          # Your question (used on each run)
 │   └── question_off_topic.txt
 ├── reports/                  # Generated checklist (gitignored)
-└── examples/                 # Sample outputs for portfolio
+└── examples/                 # Sample outputs + safe sample SOP for portfolio
+    └── sample_sop.txt        # Fake SOP, safe to share publicly
 ```
 
 ---
@@ -173,7 +278,7 @@ The pipeline constants live in `app/pipeline.py` (shared by the CLI and the API)
 
 | Constant | Where | Current value | What it does |
 |---|---|---|---|
-| `DOCUMENT_PATH` | `app/pipeline.py` | `documents/sop_oes.txt` | SOP file |
+| `DOCUMENT_NAME` | `app/pipeline.py` | `sop_oes.txt` | SOP file name (resolved by the storage layer) |
 | `QUESTION_PATH` | `main.py` | `input/question.txt` | Question file (CLI) |
 | `CHUNK_SIZE` | `app/pipeline.py` | `300` | Chunk size in characters |
 | `CHUNK_OVERLAP` | `app/pipeline.py` | `50` | Overlap between chunks |

@@ -11,6 +11,10 @@ logs/
 reports/
 outputs/
 
+# Private documents (real SOPs / manuals / tickets) - keep folder, ignore contents
+documents/*
+!documents/.gitkeep
+
 .DS_Store
 Thumbs.db
 

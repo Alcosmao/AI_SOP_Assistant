@@ -1,5 +1,5 @@
 from pathlib import Path
-from app.loaders import load_document
+from app.storage.factory import get_storage
 from app.text_utils import clean_text
 from app.chunking import chunk_text
 from app.openai_embeddings import create_openai_embeddings
@@ -18,18 +18,19 @@ from app.validation import validate_checklist_items
 from app.export import save_checklist_to_txt
 
 
-DOCUMENT_PATH = Path("documents/sop_oes.txt")
+DOCUMENT_PATH = "sop_oes.txt"
 REPORTS_PATH = Path("reports")
 CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
 TOP_K = 5
 MINIMUM_RELEVANCE_SCORE = 0.65
 
-def run_rag_pipeline(question: str, documenth_path: Path = DOCUMENT_PATH):
-    document_text = load_document(documenth_path)
+def run_rag_pipeline(question: str, document_name: str = DOCUMENT_PATH):
+    storage = get_storage()
+    document_text = storage.read_document(document_name)
 
     if document_text is None:
-        raise FileNotFoundError(f"Document not found: {documenth_path}")
+        raise FileNotFoundError(f"Document not found: {document_name}")
     
     cleaned_text = clean_text(document_text)
     chunks = chunk_text(cleaned_text, CHUNK_SIZE, CHUNK_OVERLAP)

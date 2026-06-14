@@ -23,6 +23,7 @@ These examples are from the **OpenAI version** of the project:
 | `validated_checklist.txt` | Checklist only (6 items from success run) |
 | `checklist_report.txt` | Same checklist saved to `reports/checklist.txt` |
 | `api_response.json` | Sample JSON returned by the FastAPI `POST /ask` endpoint |
+| `sample_sop.txt` | A **fake, safe** SOP you can copy into `documents/` to test the pipeline without using private files |
 
 ---
 

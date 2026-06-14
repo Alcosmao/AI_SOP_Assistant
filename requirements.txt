@@ -2,3 +2,6 @@ openai
 python-dotenv
 fastapi
 uvicorn
+
+# Only needed when STORAGE_MODE=blob (Azure Blob Storage / Azurite)
+azure-storage-blob

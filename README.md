@@ -162,6 +162,75 @@ Example response: see [examples/api_response.json](examples/api_response.json).
 
 ---
 
+## Power Automate Integration
+
+Beyond the API, I connected the AI SOP Assistant to a **Microsoft 365**
+workflow using **Power Automate**. This turns the project from a developer-only
+API into a tool that non-technical staff can use directly from **Microsoft
+Teams**, with every question logged for review.
+
+### What the flow does
+
+A user types a question in a Teams/Power Automate trigger. The flow calls the
+FastAPI `/ask` endpoint, reads the grounded answer, and then **branches on
+whether the document actually had relevant context**:
+
+- **Has context** → post the grounded answer to Teams + log the query.
+- **No context** → post a "needs manual review" alert to Teams + log the query.
+
+Either way, the question and outcome are written to a **SharePoint list** so
+nothing is lost.
+
+### Architecture
+
+```mermaid
+flowchart TD
+    A[Manual trigger<br/>text input: Question] --> B[HTTP POST /ask<br/>question + document_name]
+    B --> C[FastAPI RAG pipeline<br/>via ngrok tunnel]
+    C --> D[JSON response<br/>question, has_context,<br/>answer, sources, checklist]
+    D --> E[Parse JSON]
+    E --> F{has_context?}
+    F -- true --> G[Post grounded answer<br/>to Microsoft Teams]
+    F -- false --> H[Post 'needs manual review'<br/>alert to Teams]
+    G --> I[(SharePoint list:<br/>SOP Queries)]
+    H --> I
+```
+
+### Key design decisions
+
+- **The `has_context` condition is the point, not a detail.** The flow trusts
+  the API's honesty signal: if the document didn't contain a relevant answer,
+  it does *not* present a confident reply. Instead it routes the question for
+  human review. This carries the responsible-AI grounding from the API all the
+  way through to the end user.
+- **Logging the "no context" cases enables gap analysis.** Every unanswered
+  question is recorded in SharePoint. Over time this list shows *which topics
+  the SOP documents don't cover yet* — turning failures into a backlog for
+  improving the knowledge base.
+- **`ngrok` for local testing.** The HTTP action calls the FastAPI server
+  through an ngrok tunnel, so the full cloud flow can be tested against the
+  local app before any real deployment.
+
+### SharePoint log (SOP Queries list)
+
+| Column | Purpose |
+|---|---|
+| `Title` | Short label for the entry |
+| `Question` | The user's original question |
+| `Answer` | The grounded answer (or review note) |
+| `HasContext` | Whether the document had relevant context |
+| `Timestamp` | When the query was made |
+
+### Tech stack additions
+
+- **Power Automate** — cloud flow orchestration (HTTP action requires a Premium
+  trial on top of M365 Business Basic)
+- **Microsoft Teams** — delivers answers and review alerts to users
+- **SharePoint** — logs every query for auditing and gap analysis
+- **ngrok** — exposes the local FastAPI server for testing the live flow
+
+---
+
 ## Storage abstraction
 
 The app does **not** read documents from a hardcoded file path anymore. Instead
@@ -389,6 +458,7 @@ Sample outputs from the **current OpenAI version** — no API key needed to prev
 - [x] Custom question from `input/question.txt`
 - [x] Examples folder
 - [x] FastAPI REST API (`GET /health`, `POST /ask`) with error handling
+- [x] Power Automate / Teams / SharePoint integration
 
 ## What I still want to add
 
@@ -396,6 +466,7 @@ Sample outputs from the **current OpenAI version** — no API key needed to prev
 - [ ] Load multiple SOP files
 - [ ] Deploy to cloud
 - [x] FastAPI endpoint
+- [x] Power Automate flow (Teams + SharePoint logging)
 - [x] Updated examples/ with OpenAI run outputs
 
 ---
